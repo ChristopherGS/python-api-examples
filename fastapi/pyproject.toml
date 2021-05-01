@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "app"
+version = "0.2.0"
+description = ""
+authors = ["ChristopherGS"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+uvicorn = "^0.11.3"
+fastapi = "0.58.1"
+python-multipart = "^0.0.5"
+pydantic = {extras = ["email"], version = "^1.4"}
+jinja2 = "^2.11.2"
+python-jose = {extras = ["cryptography"], version = "^3.1.0"}
+josepy = "^1.3.0"
+typing_extensions = "^3.7.4"
+loguru = "^0.5.3"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.770"
+black = "^19.10b0"
+isort = "^4.3.21"
+autoflake = "^1.3.1"
+flake8 = "^3.7.9"
+pytest = "6.0.2"
+pytest-asyncio = "^0.14.0"
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+line_length = 88
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
