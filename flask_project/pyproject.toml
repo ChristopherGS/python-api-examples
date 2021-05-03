@@ -8,6 +8,11 @@ authors = ["ChristopherGS"]
 python = "^3.7"
 flask = "1.1.2"
 python-dotenv = "0.16.0"
+bcrypt = "^3.2.0"
+PyJWT = "^2.1.0"
+Flask-Cors = "^3.0.10"
+Flask-Bcrypt = "^0.7.1"
+Flask-SQLAlchemy = "^2.5.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.770"
