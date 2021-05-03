@@ -1,10 +1,7 @@
-from app import app
-
-
 from flask import Blueprint, request, make_response, jsonify
 from flask.views import MethodView
 
-from app import bcrypt, db
+from app import bcrypt, db, app
 from app.models import User
 
 auth_blueprint = Blueprint('auth', __name__)
