@@ -34,18 +34,13 @@ class LoggingSettings(BaseSettings):
     LOGGING_LEVEL: int = logging.INFO  # logging levels are ints
 
 
+class SQLLiteSettings(BaseSettings):
+    SQLALCHEMY_DATABASE_URI: str
+
+
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     JWT_SECRET: str = "TEST_SECRET_DO_NOT_USE_IN_PROD"
-
-    # 60 minutes * 24 hours * 30 days = 30 days
-    CONFIRMATION_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30
-    EMAIL_CONFIRMATION_REDIRECT_URL: str = (
-        f"http://localhost:8001{API_V1_STR}/users/confirm"
-    )
-    PASSWORD_RESET_REDIRECT_URL: str = (
-        f"http://localhost:8001{API_V1_STR}/users/new-password"
-    )
 
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
@@ -57,6 +52,7 @@ class Settings(BaseSettings):
 
     # Meta
     logging: LoggingSettings = LoggingSettings()
+    db: SQLLiteSettings = SQLLiteSettings()
 
     DOMAIN: str = "localhost:8001"
     SERVER_HOST: AnyHttpUrl = "http://localhost:8001"  # type: ignore
@@ -68,8 +64,6 @@ class Settings(BaseSettings):
         "http://localhost:8000",  # type: ignore
         "https://localhost:3000",  # type: ignore
         "https://localhost:8000",  # type: ignore
-        "http://api.coursemaker.io",  # type: ignore
-        "https://api.coursemaker.io",  # type: ignore
     ]
     # Origins that match this regex OR are in the above list are allowed
     BACKEND_CORS_ORIGIN_REGEX: Optional[
