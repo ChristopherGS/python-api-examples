@@ -35,7 +35,7 @@ class LoggingSettings(BaseSettings):
 
 
 class SQLLiteSettings(BaseSettings):
-    SQLALCHEMY_DATABASE_URI: str
+    SQLALCHEMY_DATABASE_URI: str = 'sqlite:///example.db'
 
 
 class Settings(BaseSettings):

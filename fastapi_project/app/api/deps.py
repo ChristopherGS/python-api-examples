@@ -1,12 +1,13 @@
 import typing as t
 
-from app.core.config import settings
-from app.db.session import SessionLocal
+from app.config import settings
+from app.database import SessionLocal
 from app.auth import oauth2_scheme, authenticate
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
+from sqlalchemy.orm.session import Session
 
 
 def get_db() -> t.Generator:
@@ -19,7 +20,7 @@ def get_db() -> t.Generator:
 
 
 async def get_current_user(
-    db: Session = Depends(deps.get_db),
+    db: Session = Depends(get_db),
     token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

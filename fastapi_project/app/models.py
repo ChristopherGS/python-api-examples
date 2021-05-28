@@ -7,6 +7,8 @@ from sqlalchemy.dialects.postgresql import UUID
 
 
 class User(Base):
+    __tablename__ = 'User'
+
     id = Column(
         UUID(as_uuid=True),
         primary_key=True,

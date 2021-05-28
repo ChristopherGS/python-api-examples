@@ -1,11 +1,14 @@
-from fastapi import APIRouter
-
 from app import schemas
 from app import __version__
 from app.auth import authenticate
-from app.api.deps import get_current_user
+from app.api import deps
+from app.models import User
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm.session import Session
+
+from typing import Optional, Any
 
 api_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -28,7 +31,7 @@ def health() -> dict:
     return {"name": "Example API", "version": __version__}
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(deps.oauth2_scheme)):
     user = fake_decode_token(token)
     if not user:
         raise HTTPException(
@@ -39,7 +42,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-@app.post("/token")
+@api_router.post("/token")
 async def login(
     db: Session = Depends(deps.get_db),
     form_data: OAuth2PasswordRequestForm = Depends()
@@ -56,16 +59,16 @@ async def login(
     return {"access_token": user.username, "token_type": "bearer"}
 
 
-@app.get("/users/me")
+@api_router.get("/users/me")
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-@router.post("/signup", response_model=schemas.User, status_code=201)
+@api_router.post("/signup", response_model=schemas.User, status_code=201)
 def create_user_signup(
         *,
         db: Session = Depends(deps.get_db),
-        user_in: schemas.UserCreateRestricted,
+        user_in: schemas.CreateUser,
 ) -> Any:
     """
     Create new user without the need to be logged in.

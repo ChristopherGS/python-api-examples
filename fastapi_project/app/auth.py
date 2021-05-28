@@ -2,8 +2,11 @@ from typing import Optional
 
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
+from sqlalchemy.orm.session import Session
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token"
+from app.models import User
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
