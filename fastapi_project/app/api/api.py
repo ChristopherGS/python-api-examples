@@ -1,6 +1,6 @@
 from app import schemas
 from app import __version__
-from app.auth import authenticate
+from app.auth import authenticate, get_password_hash
 from app.api import deps
 from app.models import User
 
@@ -73,18 +73,17 @@ def create_user_signup(
     """
     Create new user without the need to be logged in.
     """
-    create_user = schemas.UserCreate(**user_in.dict())
 
-    user = crud.user.get_by_email(
-        db, email=create_user.email, client_id=create_user.client_id
-    )
+    user = db.query(User
+                    ).filter(User.email == user_in.email).first()
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this email already exists in the system",
         )
 
-    user = crud.user.create(db, obj_in=create_user)
+    user_in.pop("password")
+    db_obj = User(**user_in)
+    db_obj.hashed_password = get_password_hash(user_in.password)
+    db.add(db_obj)
     db.commit()
-
-    return user
