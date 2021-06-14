@@ -5,6 +5,7 @@ from loguru import logger
 
 from app.api.api import api_router
 from app.config import settings, setup_app_logging
+from app.models import User
 
 # setup logging as early as possible
 setup_app_logging(config=settings)

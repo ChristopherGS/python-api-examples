@@ -1,11 +1,11 @@
 from app import schemas
 from app import __version__
-from app.auth import authenticate, get_password_hash
+from app.auth import authenticate, get_password_hash, get_user_jwt_payload, create_access_token
 from app.api import deps
 from app.models import User
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm.session import Session
 
 from typing import Optional, Any
@@ -47,14 +47,19 @@ async def login(
     db: Session = Depends(deps.get_db),
     form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
-    user_dict = authenticate(
+    user = authenticate(
         db,
         email=form_data.username,
         password=form_data.password,
     )
     if not user_dict:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    user = UserInDB(**user_dict)
+
+    user_jwt_payload = get_user_jwt_payload(user)
+    return {
+        "access_token": create_access_token(user.id, user_jwt_payload),
+        "token_type": "bearer",
+    }
 
     return {"access_token": user.username, "token_type": "bearer"}
 
@@ -81,9 +86,11 @@ def create_user_signup(
             status_code=400,
             detail="The user with this email already exists in the system",
         )
-
-    user_in.pop("password")
-    db_obj = User(**user_in)
+    create_user_data = user_in.dict()
+    create_user_data.pop("password")
+    db_obj = User(**create_user_data)
     db_obj.hashed_password = get_password_hash(user_in.password)
     db.add(db_obj)
     db.commit()
+
+    return schemas.User(**create_user_data)
