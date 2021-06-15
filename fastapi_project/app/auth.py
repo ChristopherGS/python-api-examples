@@ -1,9 +1,10 @@
 from typing import Optional, MutableMapping, List, Union
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlalchemy.orm.session import Session
+from jose import jwt
 
 from app.models import User
 from app.config import settings
@@ -24,10 +25,10 @@ def get_password_hash(password: str) -> str:
 
 
 def authenticate(
-        db: Session,
         *,
         email: str,
         password: str,
+        db: Session,
 ) -> Optional[User]:
     user = db.query(User).filter(User.email == email).first()
     if not user:
@@ -40,6 +41,7 @@ def authenticate(
 def get_user_jwt_payload(
         user: User,
 ) -> JWTPayloadMapping:
+    payload: JWTPayloadMapping = {}
     payload["aud"] = [settings.DOMAIN]
     return payload
 
@@ -54,3 +56,18 @@ def create_access_token(
         sub=sub,
         payload=payload,
     )
+
+
+def _create_token(
+        token_type: str,
+        lifetime: timedelta,
+        sub: str,
+        payload: Optional[JWTPayloadMapping] = None,
+) -> str:
+    payload = payload if payload else {}
+    expire = datetime.utcnow() + lifetime
+    payload["type"] = token_type
+    payload["exp"] = expire
+    payload["iat"] = datetime.utcnow()
+    payload["sub"] = str(sub)
+    return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.ALGORITHM)

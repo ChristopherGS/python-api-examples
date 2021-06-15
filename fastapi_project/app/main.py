@@ -28,6 +28,10 @@ if settings.BACKEND_CORS_ORIGINS:
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+from app.database import init_db, SessionLocal
+
+session = SessionLocal()
+init_db(db_session=session)
 
 if __name__ == "__main__":
     # Use this for debugging purposes only

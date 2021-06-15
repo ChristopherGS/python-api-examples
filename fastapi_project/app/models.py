@@ -24,5 +24,3 @@ class User(Base):
 
     hashed_password = Column(String, nullable=False)
     disabled = Column(Boolean, default=False)
-
-Base.metadata.create_all(engine)
