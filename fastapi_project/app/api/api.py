@@ -31,17 +31,6 @@ def health() -> dict:
     return {"name": "Example API", "version": __version__}
 
 
-async def get_current_user(token: str = Depends(deps.oauth2_scheme)):
-    user = fake_decode_token(token)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return user
-
-
 @api_router.post("/token")
 async def login(
     db: Session = Depends(deps.get_db),
@@ -62,9 +51,15 @@ async def login(
     }
 
 
-@api_router.get("/users/me")
-async def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user
+@api_router.get("/users/me", response_model=schemas.User)
+async def read_users_me(current_user: User = Depends(deps.get_current_user)):
+    db_user = current_user
+    return schemas.User(
+        username=db_user.username,
+        email=db_user.email,
+        full_name=db_user.full_name,
+        disabled=db_user.disabled
+    )
 
 
 @api_router.post("/signup", response_model=schemas.User, status_code=201)
