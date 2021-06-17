@@ -35,7 +35,7 @@ class LoggingSettings(BaseSettings):
 
 
 class SQLLiteSettings(BaseSettings):
-    SQLALCHEMY_DATABASE_URI: str = 'sqlite:///example.db'
+    SQLALCHEMY_DATABASE_URI: str = "sqlite:///example.db"
 
 
 class Settings(BaseSettings):
@@ -62,9 +62,7 @@ class Settings(BaseSettings):
         "https://localhost:8000",  # type: ignore
     ]
     # Origins that match this regex OR are in the above list are allowed
-    BACKEND_CORS_ORIGIN_REGEX: Optional[
-        str
-    ] = "https.*\.(netlify.app)"  # noqa: W605
+    BACKEND_CORS_ORIGIN_REGEX: Optional[str] = "https.*\.(netlify.app)"  # noqa: W605
 
     PROJECT_NAME: str = "fastapi-example"
 

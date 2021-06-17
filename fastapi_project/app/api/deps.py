@@ -26,8 +26,7 @@ def get_db() -> Generator:
 
 
 async def get_current_user(
-    db: Session = Depends(get_db),
-    token: str = Depends(oauth2_scheme)
+    db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -35,8 +34,12 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM],
-                             options={'verify_aud': False})
+        payload = jwt.decode(
+            token,
+            settings.JWT_SECRET,
+            algorithms=[settings.ALGORITHM],
+            options={"verify_aud": False},
+        )
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception

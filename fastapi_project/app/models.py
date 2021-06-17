@@ -6,15 +6,9 @@ from sqlalchemy import Column, DateTime, String, Integer, Boolean
 
 
 class User(Base):
-    __tablename__ = 'User'
+    __tablename__ = "User"
 
-    id = Column(
-        Integer,
-        primary_key=True,
-        unique=True,
-        nullable=False,
-        index=True,
-    )
+    id = Column(Integer, primary_key=True, unique=True, nullable=False, index=True,)
     full_name = Column(String(256), index=True)
     username = Column(String(256))
     email = Column(String, index=True, nullable=False)

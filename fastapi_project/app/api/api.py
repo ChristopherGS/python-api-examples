@@ -1,6 +1,11 @@
 from app import schemas
 from app import __version__
-from app.auth import authenticate, get_password_hash, get_user_jwt_payload, create_access_token
+from app.auth import (
+    authenticate,
+    get_password_hash,
+    get_user_jwt_payload,
+    create_access_token,
+)
 from app.api import deps
 from app.models import User
 
@@ -12,7 +17,6 @@ from typing import Optional, Any
 
 api_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 
 
 @api_router.get("/", response_model=schemas.Msg, status_code=200)
@@ -33,14 +37,9 @@ def health() -> dict:
 
 @api_router.post("/token")
 async def login(
-    db: Session = Depends(deps.get_db),
-    form_data: OAuth2PasswordRequestForm = Depends()
+    db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
-    user = authenticate(
-        email=form_data.username,
-        password=form_data.password,
-        db=db
-    )
+    user = authenticate(email=form_data.username, password=form_data.password, db=db)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
@@ -58,22 +57,19 @@ async def read_users_me(current_user: User = Depends(deps.get_current_user)):
         username=db_user.username,
         email=db_user.email,
         full_name=db_user.full_name,
-        disabled=db_user.disabled
+        disabled=db_user.disabled,
     )
 
 
 @api_router.post("/signup", response_model=schemas.User, status_code=201)
 def create_user_signup(
-        *,
-        db: Session = Depends(deps.get_db),
-        user_in: schemas.CreateUser,
+    *, db: Session = Depends(deps.get_db), user_in: schemas.CreateUser,
 ) -> Any:
     """
     Create new user without the need to be logged in.
     """
 
-    user = db.query(User
-                    ).filter(User.email == user_in.email).first()
+    user = db.query(User).filter(User.email == user_in.email).first()
     if user:
         raise HTTPException(
             status_code=400,

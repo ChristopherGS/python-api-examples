@@ -16,6 +16,7 @@ JWTPayloadMapping = MutableMapping[
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -24,12 +25,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def authenticate(
-        *,
-        email: str,
-        password: str,
-        db: Session,
-) -> Optional[User]:
+def authenticate(*, email: str, password: str, db: Session,) -> Optional[User]:
     user = db.query(User).filter(User.email == email).first()
     if not user:
         return None
@@ -38,18 +34,13 @@ def authenticate(
     return user
 
 
-def get_user_jwt_payload(
-        user: User,
-) -> JWTPayloadMapping:
+def get_user_jwt_payload(user: User,) -> JWTPayloadMapping:
     payload: JWTPayloadMapping = {}
     payload["aud"] = [settings.DOMAIN]
     return payload
 
 
-def create_access_token(
-        sub: str,
-        payload: JWTPayloadMapping,
-) -> str:
+def create_access_token(sub: str, payload: JWTPayloadMapping,) -> str:
     return _create_token(
         token_type="access_token",
         lifetime=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
@@ -59,10 +50,10 @@ def create_access_token(
 
 
 def _create_token(
-        token_type: str,
-        lifetime: timedelta,
-        sub: str,
-        payload: Optional[JWTPayloadMapping] = None,
+    token_type: str,
+    lifetime: timedelta,
+    sub: str,
+    payload: Optional[JWTPayloadMapping] = None,
 ) -> str:
     payload = payload if payload else {}
     expire = datetime.utcnow() + lifetime

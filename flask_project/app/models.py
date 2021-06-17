@@ -6,6 +6,7 @@ from app import app, db, bcrypt
 
 class User(db.Model):
     """ User Model for storing user related details """
+
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -16,7 +17,7 @@ class User(db.Model):
     def __init__(self, email, password):
         self.email = email
         self.password = bcrypt.generate_password_hash(
-            password, app.config.get('BCRYPT_LOG_ROUNDS')
+            password, app.config.get("BCRYPT_LOG_ROUNDS")
         ).decode()
         self.registered_on = datetime.datetime.now()
 
@@ -27,15 +28,12 @@ class User(db.Model):
         """
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
-                'iat': datetime.datetime.utcnow(),
-                'sub': user_id
+                "exp": datetime.datetime.utcnow()
+                + datetime.timedelta(days=0, seconds=5),
+                "iat": datetime.datetime.utcnow(),
+                "sub": user_id,
             }
-            return jwt.encode(
-                payload,
-                app.config.get('SECRET_KEY'),
-                algorithm='HS256'
-            )
+            return jwt.encode(payload, app.config.get("SECRET_KEY"), algorithm="HS256")
         except Exception as e:
             return e
 
@@ -47,9 +45,9 @@ class User(db.Model):
         :return: integer|string
         """
         try:
-            payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
-            return payload['sub']
+            payload = jwt.decode(auth_token, app.config.get("SECRET_KEY"))
+            return payload["sub"]
         except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
+            return "Signature expired. Please log in again."
         except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again.'
+            return "Invalid token. Please log in again."
